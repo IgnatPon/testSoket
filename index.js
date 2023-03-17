@@ -30,7 +30,7 @@ server.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on('message', (msg) => {
-        io.emit('chat message', `<p><b style = "color: rgb(${Math.floor(1+Math.random()*244)},${Math.floor(1+Math.random()*244)},${Math.floor(1+Math.random()*244)})">${msg.name}</b>: ${msg.text}</p>`);
+        io.emit('chat message', `<p><b style = "${msg.colorT}">${msg.name}</b>: ${msg.text}</p>`);
       });
 });
 
