@@ -73,6 +73,9 @@ io.on('connection', (socket) => {
         })
         
       });
+    socket.on('song', ()=> {
+        io.emit('playSong')
+    })
 });
 
 server.use((req, res) => {
