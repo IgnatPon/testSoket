@@ -3,6 +3,7 @@ let color = `color: rgb(${Math.floor(100+Math.random()*145)},${Math.floor(100+Ma
 document.addEventListener('keydown',(e) => {
     if(e.keyCode == 13){
         if(document.querySelector('.inp').value != '' && document.querySelector('.name').value != ''){
+            
             socket.emit('message', {
                 text: document.querySelector('.inp').value,
                 name: document.querySelector('.name').value,
@@ -17,5 +18,5 @@ document.addEventListener('keydown',(e) => {
 
 socket.on('chat message', (msg) => {
     document.querySelector('.wrapper').insertAdjacentHTML('beforeend',msg);
-    document.querySelector('.wrapper').scrollTop = document.querySelector('.wrapper').scrollTop + 1000;
+    document.querySelector('.wrapper').scrollTop = document.querySelector('.wrapper').scrollTop + 100000;
   });

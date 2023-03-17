@@ -11,8 +11,15 @@
     
     <div class="wrapper">
         <input type="text" class="name">
+        <% database.messages.forEach(el => {%>
+            <p><b style = "<%= el.colorT %>"><%=el.name%></b>: <%=el.text%></p>
+            <%}); %>
+            
     </div>
     <input type="text" class="inp">
+    <script>
+        document.querySelector('.wrapper').scrollTop = document.querySelector('.wrapper').clientHeight + 100000
+    </script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="scripts/script.js"></script>
 </body>
