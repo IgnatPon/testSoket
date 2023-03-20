@@ -5,10 +5,16 @@ const server = express()
 const app = require('http').createServer(server);
 const { Server } = require("socket.io");
 const io = new Server(app);
+const mongoose = require('mongoose');
 
+mongoose.connect('mongodb://127.0.0.1:27017/messages')
+  .then(() => console.log('Connected!'));
 
 server.set('view engine', 'ejs')
 
+
+const schema = new mongoose.Schema({})
+const Model = new mongoose.model('messages', schema);
 const PORT = 3000
 
 const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
@@ -17,30 +23,6 @@ const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
 //     error ? console.log(error) : console.log(`listening port ${PORT}`)
 // })
 
-const setTime = () => {
-    let D = new Date();
-    let hour = D.getHours()
-    fs.readFile('./bd/time.json','utf-8',(err, data)=> {
-        err ? console.log(err): null;
-        let time = JSON.parse(data);
-        if(time.zero == 1 &&hour == 10 ){
-            fs.writeFile('./bd/time.json','{"zero":0}',(err)=> {
-                err ? console.log(err) : null;
-                fs.writeFile('./bd/bd.json','{"messages":[]}',(err)=> {
-                    err ? console.log(err) : null;
-                    
-                })
-            })
-        }
-        else if(time.zero == 0 &&hour != 10){
-            fs.writeFile('./bd/time.json','{"zero":1}',(err)=> {
-                err ? console.log(err) : null;
-                
-            })
-        }
-        
-    })
-}
 
 
 server.use(express.static('./public'));
@@ -48,29 +30,27 @@ setInterval(setTime, 1000*60*60);
     
     
 
-server.get('/', (req, res) => {
+server.get('/', async (req, res) => {
     
-    fs.readFile('./bd/bd.json','utf-8',(err,data)=> {
-        err ? console.log(err) : null;
-        let database = JSON.parse(data);
-    res.render(createPath('index'), {database})
-    })
+    let database = await Model.find({});
+    
+    res.render(createPath('index'),{database})
 })
 
-
+server.get('/database', async (req,res) => {
+    let data = await Model.find({});
+    res.send(data);
+})
 
 io.on('connection', (socket) => {
     socket.on('message', (msg) => {
-        fs.readFile('./bd/bd.json','utf-8',(err,data)=> {
-            err ? console.log(err) : null;
-            let database = JSON.parse(data);
-            
-            database.messages.push(msg)
-            
-             fs.writeFile('./bd/bd.json',JSON.stringify(database),(err)=> {
-                 err ? console.log(err) : io.emit('chat message', `<p><b style = "${msg.colorT}">${msg.name}</b>: ${msg.text}</p>`);;
-             })
-        })
+        let data = {
+            "text": msg.text,
+            "name": msg.name,
+            "colorT": msg.colorT
+        }
+        Model.collection.insertOne(data)
+        io.emit('chat message', `<p><b style = "${msg.colorT}">${msg.name}</b>: ${msg.text}</p>`);
         
       });
     socket.on('song', ()=> {

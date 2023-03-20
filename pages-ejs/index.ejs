@@ -11,8 +11,11 @@
     
     <div class="wrapper">
         <input type="text" class="name">
-        <% database.messages.forEach(el => {%>
-            <p><b style = "<%= el.colorT %>"><%=el.name%></b>: <%=el.text%></p>
+        <% database.forEach(el => {%>
+            <% let a = JSON.stringify(el) %>
+            <% a = JSON.parse(a) %>
+            <p><b style = "<%= a.colorT %>"><%=a.name%></b>: <%=a.text%></p>
+            
             <%}); %>
             
     </div>
