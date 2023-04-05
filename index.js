@@ -3,11 +3,12 @@ const path = require('path')
 const fs = require('fs')
 const server = express()
 const app = require('http').createServer(server);
+require('dotenv').config()
 const { Server } = require("socket.io");
 const io = new Server(app);
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/messages')
+mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connected!'));
 
 server.set('view engine', 'ejs')
@@ -15,7 +16,7 @@ server.set('view engine', 'ejs')
 
 const schema = new mongoose.Schema({})
 const Model = new mongoose.model('messages', schema);
-const PORT = 3000
+
 
 const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
 
@@ -26,7 +27,7 @@ const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
 
 
 server.use(express.static('./public'));
-setInterval(setTime, 1000*60*60);
+
     
     
 
@@ -65,4 +66,4 @@ server.use((req, res) => {
 })
 
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`));
