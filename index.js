@@ -3,11 +3,20 @@ const path = require('path')
 const fs = require('fs')
 const server = express()
 const app = require('http').createServer(server);
+require('dotenv').config()
 const { Server } = require("socket.io");
 const io = new Server(app);
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/messages')
+let getData = async (URL) => {
+    const res = await fetch(URL)
+    
+    const data = await res.json()
+
+    return data;
+}
+
+mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connected!'));
 
 server.set('view engine', 'ejs')
@@ -15,7 +24,7 @@ server.set('view engine', 'ejs')
 
 const schema = new mongoose.Schema({})
 const Model = new mongoose.model('messages', schema);
-const PORT = 3000
+
 
 const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
 
@@ -26,20 +35,48 @@ const createPath = (page) => path.resolve(__dirname, 'pages-ejs', `${page}.ejs`)
 
 
 server.use(express.static('./public'));
-setInterval(setTime, 1000*60*60);
+
     
     
 
 server.get('/', async (req, res) => {
-    
+
+    let data = await getData('https://ipapi.co/json')
+    console.log(data.ip);
     let database = await Model.find({});
-    
+    console.log(req.socket.remoteAddress)
     res.render(createPath('index'),{database})
 })
 
 server.get('/database', async (req,res) => {
     let data = await Model.find({});
     res.send(data);
+})
+
+
+
+server.get('/api/encode/:text/:key', async (req,res) => {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+    const numAlph = {}
+
+    for(let i = 0; i < alphabet.length; i++){
+        numAlph[alphabet[i]] = i
+    }
+
+    let encode = (text, key) => {
+        let code = ''
+        
+        for(let i = 0; i < text.length; i++){
+            code += alphabet[(numAlph[text[i]] + numAlph[key[i % key.length]]) % alphabet.length]
+        }
+
+        return code;
+    }
+
+    
+    res.json({
+        result : encode(req.params.text.toUpperCase(), req.params.key.toUpperCase())
+    })
 })
 
 io.on('connection', (socket) => {
@@ -65,4 +102,4 @@ server.use((req, res) => {
 })
 
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`));
