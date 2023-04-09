@@ -8,17 +8,7 @@ const { Server } = require("socket.io");
 const io = new Server(app);
 const mongoose = require('mongoose');
 
-<<<<<<< HEAD
-let getData = async (URL) => {
-    const res = await fetch(URL)
-    
-    const data = await res.json()
 
-    return data;
-}
-
-=======
->>>>>>> 29ce1734107644d60322ba64408e55a02dab188a
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connected!'));
 
@@ -58,29 +48,7 @@ server.get('/database', async (req,res) => {
 
 
 
-server.get('/api/encode/:text/:key', async (req,res) => {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
-    const numAlph = {}
 
-    for(let i = 0; i < alphabet.length; i++){
-        numAlph[alphabet[i]] = i
-    }
-
-    let encode = (text, key) => {
-        let code = ''
-        
-        for(let i = 0; i < text.length; i++){
-            code += alphabet[(numAlph[text[i]] + numAlph[key[i % key.length]]) % alphabet.length]
-        }
-
-        return code;
-    }
-
-    
-    res.json({
-        result : encode(req.params.text.toUpperCase(), req.params.key.toUpperCase())
-    })
-})
 
 io.on('connection', (socket) => {
     socket.on('message', (msg) => {
