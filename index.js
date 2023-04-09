@@ -34,8 +34,7 @@ server.use(express.static('./public'));
 
 server.get('/', async (req, res) => {
 
-    let data = await getData('https://ipapi.co/json')
-    console.log(data.ip);
+    
     let database = await Model.find({});
     console.log(req.socket.remoteAddress)
     res.render(createPath('index'),{database})
