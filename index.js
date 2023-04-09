@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const io = new Server(app);
 const mongoose = require('mongoose');
 
+<<<<<<< HEAD
 let getData = async (URL) => {
     const res = await fetch(URL)
     
@@ -16,6 +17,8 @@ let getData = async (URL) => {
     return data;
 }
 
+=======
+>>>>>>> 29ce1734107644d60322ba64408e55a02dab188a
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connected!'));
 
